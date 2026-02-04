@@ -94,7 +94,7 @@ const LogsPage = () => {
                       <td>
                         <div className="badge badge-ghost gap-1">
                             <Package size={12} />
-                            {log.items ? log.items.length : 0}
+                            {log.items ? log.items.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0}
                         </div>
                       </td>
                       <td>
@@ -147,6 +147,14 @@ const LogsPage = () => {
                                     </tr>
                                   ))}
                                 </tbody>
+                                  <tfoot>
+                                    <tr className="bg-base-300">
+                                      <td colSpan={3} className="text-right font-medium">Discount</td>
+                                      <td className="text-right font-mono text-success">
+                                        -{log.currency} {parseFloat(log.discount || 0).toFixed(2)}
+                                      </td>
+                                    </tr>
+                                  </tfoot>
                               </table>
                             </div>
                           </div>

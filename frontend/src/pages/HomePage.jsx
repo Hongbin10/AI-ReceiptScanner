@@ -161,6 +161,14 @@ const HomePage = () => {
                         </tr>
                       ))}
                     </tbody>
+                      <tfoot>
+                        <tr className="bg-base-200">
+                          <td colSpan={2} className="text-right font-medium">Discount</td>
+                          <td className="text-right font-mono text-success">
+                            -{result.currency} {parseFloat(result.discount || 0).toFixed(2)}
+                          </td>
+                        </tr>
+                      </tfoot>
                   </table>
                 </div>
               </div>

@@ -15,6 +15,7 @@ const analyzeImageWithOpenAI = async (buffer, mimetype) => {
     Analyze this receipt image and extract the following information in strict JSON format.
     Do not include any markdown formatting (like \`\`\`json). Just return the raw JSON object.
     
+    
     JSON Structure:
     {
         "merchantName": "Merchant Name (string, omit if not found)",
@@ -28,7 +29,7 @@ const analyzeImageWithOpenAI = async (buffer, mimetype) => {
                 "name": "Item Name (string)",
                 "price": "Line Total Price (number)",
                 "quantity": "Quantity (number)",
-                "category": "Category (enum: 'Food', 'Transport', 'Utilities', 'Entertainment', 'Shopping', 'Health', 'Other')"
+                "category": "Category (enum: 'Food','Utilities', 'Entertainment', 'Health', 'Other')"
             }
         ]
     }
@@ -69,10 +70,20 @@ export const uploadReceipt = async (req, res) => {
     // Call LLM to analyze the image
     const receiptData = await analyzeImageWithOpenAI(req.file.buffer, req.file.mimetype);
     
+    // Validate date format - must be DD/MM/YYYY or DD.MM.YYYY format
+    const isValidDate = (dateStr) => {
+      if (!dateStr) return false;
+      // Check for DD/MM/YYYY or DD.MM.YYYY format
+      const regex = /^(0[1-9]|[12][0-9]|3[01])[\/\.](0[1-9]|1[012])[\/\.](19|20)\d\d$/;
+      return regex.test(dateStr);
+    };
+
     // Normalize payment method: if it contains 'card', use 'card'; otherwise use 'cash'
     const normalizedData = {
       ...receiptData,
-      paymentMethod: receiptData.paymentMethod?.toLowerCase().includes('card') ? 'card' : 'cash'
+      paymentMethod: receiptData.paymentMethod?.toLowerCase().includes('card') ? 'card' : 'cash',
+      // Set date to null if not in required format
+      date: isValidDate(receiptData.date) ? receiptData.date : null
     };
 
     // Save to database
