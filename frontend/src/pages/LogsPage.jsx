@@ -90,7 +90,6 @@ const LogsPage = () => {
                       </td>
                       <td>
                         <div className="font-bold text-lg">{log.merchantName || 'Unknown Merchant'}</div>
-                        <div className="text-xs opacity-50">{log.receiptId || 'No ID'}</div>
                       </td>
                       <td>
                         <div className="badge badge-ghost gap-1">
@@ -100,7 +99,7 @@ const LogsPage = () => {
                       </td>
                       <td>
                         <div className="font-mono font-bold text-primary text-lg">
-                            {log.currency} {log.total}
+                            {log.currency} {parseFloat(log.total).toFixed(2)}
                         </div>
                       </td>
                       <td>
@@ -144,7 +143,7 @@ const LogsPage = () => {
                                         <span className="badge badge-ghost badge-sm">{item.category}</span>
                                       </td>
                                       <td className="text-center font-mono">{item.quantity}</td>
-                                      <td className="text-right font-mono font-medium">{log.currency} {item.price}</td>
+                                      <td className="text-right font-mono font-medium">{log.currency} {parseFloat(item.price).toFixed(2)}</td>
                                     </tr>
                                   ))}
                                 </tbody>

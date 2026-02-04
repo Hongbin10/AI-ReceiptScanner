@@ -63,9 +63,14 @@ const HomePage = () => {
             <h2 className="card-title mb-4">Upload Image</h2>
             
             <div className="form-control w-full">
+              <label htmlFor="file-upload" className="btn btn-primary btn-outline w-full cursor-pointer">
+                <Upload size={16} className="mr-2" />
+                Choose receipt ...
+              </label>
               <input 
+                id="file-upload"
                 type="file" 
-                className="file-input file-input-bordered file-input-primary w-full" 
+                className="hidden"
                 accept="image/*"
                 onChange={handleFileChange}
               />
@@ -121,7 +126,7 @@ const HomePage = () => {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="stat bg-base-200 rounded-lg p-4">
                         <div className="stat-title text-xs uppercase font-bold tracking-wider opacity-60">Total Amount</div>
-                        <div className="stat-value text-primary text-2xl mt-1">{result.currency} {result.total}</div>
+                        <div className="stat-value text-primary text-2xl mt-1">{result.currency} {parseFloat(result.total).toFixed(2)}</div>
                         <div className="stat-desc mt-1 font-medium">{result.date ? new Date(result.date).toLocaleDateString() : 'No Date'}</div>
                     </div>
                     <div className="stat bg-base-200 rounded-lg p-4">
@@ -150,7 +155,6 @@ const HomePage = () => {
                         <tr key={idx} className="hover:bg-base-100">
                           <td>
                             <div className="font-semibold">{item.name}</div>
-                            <div className="text-xs opacity-50 badge badge-ghost badge-sm mt-1">{item.category}</div>
                           </td>
                           <td className="text-center font-mono">{item.quantity}</td>
                           <td className="text-right font-mono font-medium">{item.price}</td>

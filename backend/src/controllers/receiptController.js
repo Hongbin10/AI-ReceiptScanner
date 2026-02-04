@@ -17,15 +17,12 @@ const analyzeImageWithOpenAI = async (buffer, mimetype) => {
     
     JSON Structure:
     {
-        "receiptId": "Receipt ID or Number (string, omit if not found)",
         "merchantName": "Merchant Name (string, omit if not found)",
-        "customerName": "Customer Name (string, omit if not found)",
         "date": "Date (YYYY-MM-DD)",
-        "tax": "Tax amount (number, omit if not found)",
         "discount": "Discount amount (number, omit if not found)",
         "total": "Total amount (number)",
-        "paymentMethod": "Payment Method (enum: 'cash', 'creditCard', 'debitCard', 'eMoney'; default 'cash')",
-        "currency": "Currency Code (e.g., USD)",
+        "paymentMethod": "Payment Method (enum: 'cash', 'card'; default 'card')",
+        "currency": "Currency Code (e.g., )",
         "items": [
             {
                 "name": "Item Name (string)",
@@ -72,13 +69,32 @@ export const uploadReceipt = async (req, res) => {
     // Call LLM to analyze the image
     const receiptData = await analyzeImageWithOpenAI(req.file.buffer, req.file.mimetype);
     
+    // Normalize payment method: if it contains 'card', use 'card'; otherwise use 'cash'
+    const normalizedData = {
+      ...receiptData,
+      paymentMethod: receiptData.paymentMethod?.toLowerCase().includes('card') ? 'card' : 'cash'
+    };
+
     // Save to database
-    const newReceipt = new Receipt(receiptData);
-    await newReceipt.save();
+    const newReceipt = new Receipt(normalizedData);
+    const savedReceipt = await newReceipt.save();
+
+    // Format the response with 2 decimal places
+    const plainReceipt = savedReceipt.toObject();
+    const responseData = {
+      ...plainReceipt,
+      total: parseFloat(plainReceipt.total).toFixed(2),
+      items: plainReceipt.items.map(item => ({
+        ...item,
+        name: item.name, // 兜底空值
+        quantity: item.quantity, // 确保是数字且兜底
+        price: parseFloat(item.price).toFixed(2)
+      }))
+    };
 
     res.status(201).json({
       message: 'Receipt processed successfully',
-      data: newReceipt
+      data: responseData
     });
   } catch (error) {
     console.error('Error processing receipt:', error);

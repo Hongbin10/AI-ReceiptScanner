@@ -12,24 +12,26 @@ const itemSchema = new mongoose.Schema({
 });
 
 const receiptSchema = new mongoose.Schema({
-  receiptId: { type: String },
   merchantName: { type: String },
-  customerName: { type: String },
   date: { type: Date },
-  tax: { type: Number },
   discount: { type: Number },
   total: { type: Number, required: true },
   paymentMethod: { 
     type: String, 
-    enum: ['cash', 'creditCard', 'debitCard', 'eMoney'], 
-    default: 'cash' 
+    enum: ['cash', 'card'], 
+    default: 'card' 
   },
-  currency: { type: String, default: 'USD' },
+  currency: { type: String, default: 'GBP' },
   items: [itemSchema],
   createdAt: { type: Date, default: Date.now }
 });
 
 const Receipt = mongoose.model('Receipt', receiptSchema);
+
+// Virtual property to format total with 2 decimal places
+receiptSchema.virtual('formattedTotal').get(function() {
+  return (this.total || 0).toFixed(2);
+});
 
 export default Receipt;import multer from 'multer';
 
