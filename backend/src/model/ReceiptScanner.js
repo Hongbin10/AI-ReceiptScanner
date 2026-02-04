@@ -33,7 +33,7 @@ const Receipt = mongoose.model('Receipt', receiptSchema);
 
 export default Receipt;import multer from 'multer';
 
-// 使用内存存储，方便直接将 Buffer 传给 OpenAI
+// Use in-memory storage to conveniently pass the Buffer directly to OpenAI 
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
@@ -48,6 +48,6 @@ export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 限制 10MB
+    fileSize: 10 * 1024 * 1024 // Limit 10MB    
   }
 });

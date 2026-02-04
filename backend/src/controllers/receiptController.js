@@ -1,14 +1,12 @@
 import Receipt from '../model/ReceiptScanner.js';
 import OpenAI from 'openai';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
 });
 
-// 内部辅助函数：调用 OpenAI 分析图片
+// Internal auxiliary function: Call OpenAI to analyze images
 const analyzeImageWithOpenAI = async (buffer, mimetype) => {
   const base64Image = buffer.toString('base64');
   const dataUrl = `data:${mimetype};base64,${base64Image}`;
@@ -41,7 +39,7 @@ const analyzeImageWithOpenAI = async (buffer, mimetype) => {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // 请确保您的账号可以使用 gpt-4o 或 gpt-4-turbo
+      model: process.env.OPENAI_MODEL, // ensure your account can use gpt-4o or gpt-4-turbo
       messages: [
         {
           role: "user",
@@ -55,7 +53,7 @@ const analyzeImageWithOpenAI = async (buffer, mimetype) => {
     });
 
     const content = response.choices[0].message.content.trim();
-    // 清理可能存在的 Markdown 代码块标记
+    // Remove possible Markdown code block markers
     const jsonString = content.replace(/^```json\n?/, '').replace(/\n?```$/, '');
     return JSON.parse(jsonString);
   } catch (error) {
@@ -64,17 +62,17 @@ const analyzeImageWithOpenAI = async (buffer, mimetype) => {
   }
 };
 
-// 1. 上传并分析 API
+// 1. Upload and analyze API        
 export const uploadReceipt = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    // 调用 LLM 分析
+    // Call LLM to analyze the image
     const receiptData = await analyzeImageWithOpenAI(req.file.buffer, req.file.mimetype);
     
-    // 存入数据库
+    // Save to database
     const newReceipt = new Receipt(receiptData);
     await newReceipt.save();
 
@@ -84,11 +82,11 @@ export const uploadReceipt = async (req, res) => {
     });
   } catch (error) {
     console.error('Error processing receipt:', error);
-    res.status(500).json({ message: 'Error processing receipt', error: error.message });
+    res.status(500).json({ message: error.message || 'An unknown server error occurred.' });
   }
 };
 
-// 2. 获取所有收据日志 API
+// 2. Get all receipt logs API
 export const getReceipts = async (req, res) => {
   try {
     const receipts = await Receipt.find().sort({ createdAt: -1 });
@@ -98,7 +96,7 @@ export const getReceipts = async (req, res) => {
   }
 };
 
-// 3. 主页/欢迎 API
+// 3. Home/Welcome API
 export const getHome = (req, res) => {
   res.json({ 
     message: "Welcome to AI Receipt Scanner API",

@@ -4,8 +4,8 @@ import { upload } from '../middleware/uploadMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', getHome); // 主页
-router.post('/upload', upload.single('receipt'), uploadReceipt); // 上传并分析
-router.get('/logs', getReceipts); // 日志页
+router.get('/', getHome); // Home page
+router.post('/upload', upload.single('receipt'), uploadReceipt); // Upload and analyze
+router.get('/logs', getReceipts); // Logs page
 
 export default router;

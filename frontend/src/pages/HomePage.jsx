@@ -34,7 +34,8 @@ const HomePage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Scan failed');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Scan failed');
       }
 
       const data = await response.json();
@@ -42,7 +43,7 @@ const HomePage = () => {
       toast.success('Receipt scanned successfully!');
     } catch (error) {
       console.error(error);
-      toast.error('Failed to analyze receipt. Please try again.');
+      toast.error(`Scan failed: ${error.message}`);
     } finally {
       setLoading(false);
     }

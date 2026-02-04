@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api', receiptRoutes); // 所有路由挂载在 /api 下
+app.use('/api', receiptRoutes); // All routes mounted under /api  
 
 // Root route for convenience
 app.get('/', (req, res) => {
