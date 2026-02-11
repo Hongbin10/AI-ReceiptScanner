@@ -2,6 +2,9 @@
 
 A full-stack web application that uses AI to automatically extract and structure receipt data from uploaded images. Built with React, Node.js, Express, MongoDB, and OpenAI's vision API.
 
+![Scan Example](pics/scan.png)
+![History Example](pics/history.png)
+
 ## Features
 
 - **AI-Powered Receipt Scanning**: Upload receipt images and automatically extract key information
